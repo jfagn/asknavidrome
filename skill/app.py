@@ -9,7 +9,7 @@ import sys
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler, AbstractRequestInterceptor, AbstractResponseInterceptor
-from ask_sdk_core.utils import is_request_type, is_intent_name, get_slot_value_v2, get_intent_name, get_request_type
+from ask_sdk_core.utils import is_request_type, is_intent_name, get_intent_name, get_request_type
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
@@ -18,6 +18,7 @@ from flask_ask_sdk.skill_adapter import SkillAdapter
 import asknavidrome.subsonic_api as api
 import asknavidrome.media_queue as queue
 import asknavidrome.controller as controller
+from asknavidrome.utils import get_resolved_slot_value
 
 # Create web service
 app = Flask(__name__)
@@ -305,7 +306,7 @@ class NaviSonicPlayMusicByArtist(AbstractRequestHandler):
             backgroundProcess.join()
 
         # Get the requested artist
-        artist = get_slot_value_v2(handler_input, 'artist')
+        artist = get_resolved_slot_value(handler_input, 'artist')
 
         # Search for an artist
         artist_lookup = connection.search_artist(artist.value)
@@ -360,8 +361,8 @@ class NaviSonicPlayAlbumByArtist(AbstractRequestHandler):
             backgroundProcess.join()
 
         # Get variables from intent
-        artist = get_slot_value_v2(handler_input, 'artist')
-        album = get_slot_value_v2(handler_input, 'album')
+        artist = get_resolved_slot_value(handler_input, 'artist')
+        album = get_resolved_slot_value(handler_input, 'album')
 
         if artist is not None and album is not None:
             # Play album by artist method
@@ -452,8 +453,8 @@ class NaviSonicPlaySongByArtist(AbstractRequestHandler):
         logger.debug('In NaviSonicPlaySongByArtist')
 
         # Get variables from intent
-        artist = get_slot_value_v2(handler_input, 'artist')
-        song = get_slot_value_v2(handler_input, 'song')
+        artist = get_resolved_slot_value(handler_input, 'artist')
+        song = get_resolved_slot_value(handler_input, 'song')
 
         logger.debug(f'Searching for the song {song.value} by {artist.value}')
 
@@ -514,7 +515,7 @@ class NaviSonicPlayPlaylist(AbstractRequestHandler):
             backgroundProcess.join()
 
         # Get the requested playlist
-        playlist = get_slot_value_v2(handler_input, 'playlist')
+        playlist = get_resolved_slot_value(handler_input, 'playlist')
 
         # Search for a playlist
         playlist_id = connection.search_playlist(playlist.value)
@@ -564,7 +565,7 @@ class NaviSonicPlayMusicByGenre(AbstractRequestHandler):
             backgroundProcess.join()
 
         # Get the requested genre
-        genre = get_slot_value_v2(handler_input, 'genre')
+        genre = get_resolved_slot_value(handler_input, 'genre')
 
         song_id_list = connection.build_song_list_from_genre(genre.value, min_song_count)
 
